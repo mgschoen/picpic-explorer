@@ -1,11 +1,15 @@
 <template>
-
-  <b-container>
+  <div>
+    <b-navbar type="dark" variant="dark">
+      <b-navbar-brand href="#">PicPic Explorer</b-navbar-brand>
+    </b-navbar>
+    <b-container class="view-wrapper">
     
-    <router-view></router-view>  
+      <router-view></router-view>  
 
-  </b-container>
+    </b-container>
 
+  </div>
 </template>
 
 <script>
@@ -23,5 +27,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+.view-wrapper {
+  margin-top: 20px;
+}
 </style>

@@ -1,13 +1,99 @@
 <template>
-    <h1>I am the list view</h1>
+<div>
+    <b-row>
+        <b-col>
+            <h1>Select an article</h1>
+        </b-col>
+    </b-row>
+    <b-row>
+        <b-col>
+            <b-form-input v-model="searchTerm" 
+                type="text" 
+                placeholder="Search..."></b-form-input>
+        </b-col>
+    </b-row>
+    <b-row>
+        <b-col>
+            <b-table striped :items="searchResults" :fields="tableFields">
+                <template slot="headline" scope="data">
+                    <a :href="'#/article/' + data.item.id">{{data.value}}</a>
+                </template>
+            </b-table>
+        </b-col>
+    </b-row>
+</div>
 </template>
 
 <script>
 export default {
-  name: 'list',
-  data () {
-      return {}
-  }
+    name: 'list',
+    data () {
+        return {
+            searchTerm: '',
+            searchResults: [],
+            searchTermTimeout: null,
+            tableFields: {
+                id: {
+                    label: 'ID'
+                },
+                headline: {
+                    label: 'Headline'
+                },
+                published: {
+                    label: 'Published'
+                }
+            }
+        }
+    },
+    watch: {
+        searchTerm: function (term) {
+            if (this.searchTermTimeout) {
+                window.clearTimeout(this.searchTermTimeout)
+                this.searchTermTimeout = window.setTimeout(function () {
+                    window.clearTimeout(this.searchTermTimeout)
+                    if (term === '') {
+                        this.getAllArticles(0)
+                    } else {
+                        this.searchForArticles(term, 0)
+                    }
+                }.bind(this), 500)
+            } else {
+                this.searchTermTimeout = window.setTimeout(function () {
+                    window.clearTimeout(this.searchTermTimeout)
+                    this.searchForArticles(term, 0)
+                }, 500)
+            }
+        }
+    },
+    mounted () {
+        this.getAllArticles(0)
+    },
+    methods: {
+        getAllArticles: function (page) {
+            this.$http.get('http://localhost:27112/articles/' + page).then(response => {
+                this.searchResults = response.body.result.map(doc => {
+                    let date = new Date(doc.published)
+                    return {
+                        id: doc.$loki,
+                        headline: doc.article.headline,
+                        published: date.toLocaleString('en-GB', {timeZone: 'UTC'})
+                    }
+                })
+            }).catch(error => {})
+        },
+        searchForArticles: function (searchTerm, page) {
+            this.$http.get('http://localhost:27112/search/' + encodeURI(searchTerm) + '/' + page).then(response => {
+                this.searchResults = response.body.result.map(doc => {
+                    let date = new Date(doc.published)
+                    return {
+                        id: doc.$loki,
+                        headline: doc.article.headline,
+                        published: date.toLocaleString('en-GB', {timeZone: 'UTC'})
+                    }
+                })
+            }).catch(error => {})
+        }
+    }
 }
 </script>
 
