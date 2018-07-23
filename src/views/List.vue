@@ -31,6 +31,18 @@
             </b-table>
         </b-col>
     </b-row>
+    <b-row align-h="center" class="pagination-controls">
+        <b-col cols="auto">
+            <b-button-group>
+                <b-button variant="outline-secondary" 
+                    :disabled="!previous" @click="previousPage()">< Previous</b-button>
+                <b-button variant="outline-secondary" 
+                    disabled>Page {{page + 1}} / {{pagesTotal}}</b-button>
+                <b-button variant="outline-secondary" 
+                    :disabled="!next" @click="nextPage()">Next ></b-button>
+            </b-button-group>
+        </b-col>
+    </b-row>
 </div>
 </template>
 
@@ -53,7 +65,13 @@ export default {
                     label: 'Published'
                 }
             },
-            onlyGettyMeta: false
+            onlyGettyMeta: false,
+
+            // pagination
+            previous: false,
+            next: false,
+            page: 0,
+            pagesTotal: 0
         }
     },
     watch: {
@@ -88,6 +106,21 @@ export default {
         gettyCheckboxChanged: function (checked) {
             this.getAllArticles(0, checked)
         },
+        updateList: function (apiResponse) {
+            let pagination = apiResponse.body.pagination
+            this.previous = pagination.previous
+            this.next = pagination.next
+            this.page = pagination.pageIndex
+            this.pagesTotal = pagination.pagesTotal
+            this.searchResults = apiResponse.body.result.map(doc => {
+                let date = new Date(doc.published)
+                return {
+                    id: doc.$loki,
+                    headline: doc.article.headline,
+                    published: date.toLocaleString('en-GB', {timeZone: 'UTC'})
+                }
+            })
+        },
         getAllArticles: function (page, onlyGettyLead) {
             let url = onlyGettyLead
                 ? 'http://localhost:27112/articles/gettylead/'
@@ -95,27 +128,27 @@ export default {
             url += page
             console.log(`Requesting url ${url}`)
             this.$http.get(url).then(response => {
-                this.searchResults = response.body.result.map(doc => {
-                    let date = new Date(doc.published)
-                    return {
-                        id: doc.$loki,
-                        headline: doc.article.headline,
-                        published: date.toLocaleString('en-GB', {timeZone: 'UTC'})
-                    }
-                })
+                this.updateList(response)
             }).catch(error => {})
         },
         searchForArticles: function (searchTerm, page) {
             this.$http.get('http://localhost:27112/search/' + encodeURI(searchTerm) + '/' + page).then(response => {
-                this.searchResults = response.body.result.map(doc => {
-                    let date = new Date(doc.published)
-                    return {
-                        id: doc.$loki,
-                        headline: doc.article.headline,
-                        published: date.toLocaleString('en-GB', {timeZone: 'UTC'})
-                    }
-                })
+                this.updateList(response)
             }).catch(error => {})
+        },
+        nextPage: function () {
+            if (this.searchTerm === '') {
+                this.getAllArticles(this.page + 1, this.onlyGettyMeta)
+            } else {
+                this.searchForArticles(this.searchTerm, this.page + 1)
+            }
+        },
+        previousPage: function () {
+            if (this.searchTerm === '') {
+                this.getAllArticles(this.page - 1, this.onlyGettyMeta)
+            } else {
+                this.searchForArticles(this.searchTerm, this.page - 1)
+            }
         }
     }
 }
@@ -124,5 +157,8 @@ export default {
 <style>
 #searchFilters {
     margin: 20px auto;
+}
+.pagination-controls {
+    margin-bottom: 20px;
 }
 </style>
