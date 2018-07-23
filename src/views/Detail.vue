@@ -1,10 +1,10 @@
 <template>
     <div>
         <b-row>
-            <b-col lg="8" order="1" order-lg="0">
+            <b-col lg="8" order="1" order-lg="0" id="articleContent">
                 <h1>{{headline}}</h1>
                 <div id="paragraphs">
-                    <p v-for="p in paragraphs" :class="p.type">
+                    <p v-for="p in paragraphs" :class="'para ' + p.type">
                         {{p.content}}
                     </p>
                 </div>
@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import Mark from 'mark.js'
+
 export default {
     name: 'detail',
     props: ['id'],
@@ -80,6 +82,9 @@ export default {
             leadImageUrl: '',
             leadImageCaption: '',
             leadImageKeywords: [],
+
+            // marker
+            marker: null
         }
     },
     mounted () {
@@ -98,6 +103,17 @@ export default {
                 this.leadImageUrl = doc.leadImage.url
                 this.leadImageCaption = doc.leadImage.caption
                 this.leadImageKeywords = doc.leadImage.keywords
+                // mark all keywords in text
+                this.$nextTick().then(() => {
+                    this.marker = new Mark(this.$el.querySelector('#articleContent'))
+                    let keywords = this.leadImageKeywords.map(kw => {
+                        return kw.text
+                    })
+                    this.marker.mark(keywords, {
+                        acrossElements: true,
+                        separateWordSearch: false
+                    })
+                })
             }
         }).catch(error => {})
     }

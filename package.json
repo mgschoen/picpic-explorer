@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
+    "mark.js": "^8.11.1",
     "vue": "^2.5.11",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1"

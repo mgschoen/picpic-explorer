@@ -126,7 +126,6 @@ export default {
                 ? 'http://localhost:27112/articles/gettylead/'
                 : 'http://localhost:27112/articles/'
             url += page
-            console.log(`Requesting url ${url}`)
             this.$http.get(url).then(response => {
                 this.updateList(response)
             }).catch(error => {})
