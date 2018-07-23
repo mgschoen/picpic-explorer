@@ -12,10 +12,20 @@
                 placeholder="Search..."></b-form-input>
         </b-col>
     </b-row>
+    <b-row id="searchFilters">
+        <b-col>
+            <b-form-checkbox 
+                v-model="onlyGettyMeta"
+                :disabled="disableGettyFilter"
+                @change="gettyCheckboxChanged">
+                    Only articles with lead image from Getty
+            </b-form-checkbox>
+        </b-col>
+    </b-row>
     <b-row>
         <b-col>
             <b-table striped :items="searchResults" :fields="tableFields">
-                <template slot="headline" scope="data">
+                <template slot="headline" slot-scope="data">
                     <a :href="'#/article/' + data.item.id">{{data.value}}</a>
                 </template>
             </b-table>
@@ -42,7 +52,8 @@ export default {
                 published: {
                     label: 'Published'
                 }
-            }
+            },
+            onlyGettyMeta: false
         }
     },
     watch: {
@@ -65,12 +76,25 @@ export default {
             }
         }
     },
+    computed: {
+        disableGettyFilter: function () {
+            return this.searchTerm !== ''
+        }
+    },
     mounted () {
         this.getAllArticles(0)
     },
     methods: {
-        getAllArticles: function (page) {
-            this.$http.get('http://localhost:27112/articles/' + page).then(response => {
+        gettyCheckboxChanged: function (checked) {
+            this.getAllArticles(0, checked)
+        },
+        getAllArticles: function (page, onlyGettyLead) {
+            let url = onlyGettyLead
+                ? 'http://localhost:27112/articles/gettylead/'
+                : 'http://localhost:27112/articles/'
+            url += page
+            console.log(`Requesting url ${url}`)
+            this.$http.get(url).then(response => {
                 this.searchResults = response.body.result.map(doc => {
                     let date = new Date(doc.published)
                     return {
@@ -98,5 +122,7 @@ export default {
 </script>
 
 <style>
-
+#searchFilters {
+    margin: 20px auto;
+}
 </style>
