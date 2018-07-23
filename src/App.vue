@@ -1,7 +1,9 @@
 <template>
   <div>
     <b-navbar type="dark" variant="dark">
-      <b-navbar-brand href="#">PicPic Explorer</b-navbar-brand>
+      <b-navbar-brand >
+        <router-link to="/">PicPic Explorer</router-link>
+      </b-navbar-brand>
     </b-navbar>
     <b-container class="view-wrapper">
     
@@ -27,6 +29,13 @@ export default {
 </script>
 
 <style lang="scss">
+.navbar .navbar-brand a {
+  color: white;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
 .view-wrapper {
   margin-top: 20px;
 }

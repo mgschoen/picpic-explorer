@@ -1,24 +1,151 @@
 <template>
     <div>
         <b-row>
-            <h1>I am the detail view</h1>
-        </b-row>
-        <b-row>
-            <p>For article ${{id}}</p>
+            <b-col lg="8" order="1" order-lg="0">
+                <h1>{{headline}}</h1>
+                <div id="paragraphs">
+                    <p v-for="p in paragraphs" :class="p.type">
+                        {{p.content}}
+                    </p>
+                </div>
+            </b-col>
+            <b-col lg="4" order="0" order-lg="1">
+                <b-card :title="`Article $${id}`" id="articleMeta">
+                    <p>
+                        <b-button size="sm" :href="url" target="_blank">
+                            Original article
+                        </b-button>
+                    </p>
+                    <p>
+                        <b>Published:</b> {{published}}<br />
+                        <b>Section:</b> {{section}}
+                    </p>
+
+                    <div class="meta-block">
+                        <h5>Teaser</h5>
+                        <p><b>Headline:</b> {{teaserHeadline}}</p>
+                    </div>
+
+                    <div v-if="leadImage">
+                        <div class="meta-block">
+                            <h5>Lead Image</h5>
+                            <p><b>Title:</b> {{leadImageTitle}}</p>
+                            <a :href="leadImageUrl" target="_blank">
+                                <img :src="leadImageUrl" class="image-lead">
+                            </a>
+                            <p><b>Caption:</b> {{leadImageCaption}}</p>
+                            <p>
+                                <b>Keywords:</b>
+                                <span class="keyword" v-for="kw in leadImageKeywords">
+                                    <code>{{kw.text}}</code>&#32;
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="meta-block">
+                        <h5>Article images</h5>
+                        <p>
+                            <a v-for="img in images" :href="img.src" target="_blank" class="image-thumb">
+                                <img :src="img.src">
+                            </a>
+                        </p>
+                    </div>
+                </b-card>
+            </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'detail',
-  props: ['id'],
-  data () {
-      return {}
-  }
+    name: 'detail',
+    props: ['id'],
+    data () {
+        return {
+            // article content
+            headline: '',
+            paragraphs: [],
+            images: [],
+
+            // article meta
+            published: '',
+            section: '',
+            url: '',
+            teaserHeadline: '',
+
+            // leadImage
+            leadImage: false,
+            leadImageTitle: '',
+            leadImageUrl: '',
+            leadImageCaption: '',
+            leadImageKeywords: [],
+        }
+    },
+    mounted () {
+        this.$http.get('http://localhost:27112/article/' + this.id).then(response => {
+            let doc = response.body
+            this.url = 'http://www.bbc.com' + doc.url
+            this.headline = doc.article.headline
+            this.paragraphs = doc.article.paragraphs
+            this.images = doc.article.images
+            this.teaserHeadline = doc.teaser.headline
+            this.published = new Date(doc.published).toLocaleString('en-GB', {timeZone: 'UTC'})
+            this.section = doc.section
+            if (doc.leadImage) {
+                this.leadImage = true
+                this.leadImageTitle = doc.leadImage.title
+                this.leadImageUrl = doc.leadImage.url
+                this.leadImageCaption = doc.leadImage.caption
+                this.leadImageKeywords = doc.leadImage.keywords
+            }
+        }).catch(error => {})
+    }
 }
 </script>
 
-<style>
+<style lang="scss">
+#articleMeta {
+    margin-bottom: 30px;
+}
+.meta-block {
+    border-top: 1px solid rgba(0, 0, 0, .125);
+    padding-top: 10px;
 
+    & .image- {
+
+        &lead {
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        &thumb {
+            float: left;
+
+            & img {
+                height: 40px;
+                max-width: 100px;
+            }
+        }
+    }
+}
+span.keyword code {
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 2px;
+    padding: 0 3px;
+    white-space: nowrap;
+}
+#paragraphs p {
+    &.H2, &H3 {
+        font-weight: bold;
+        font-size: 24px;
+    }
+    &.LI {
+        margin-left: 30px;
+
+        &:before {
+            content: '- ';
+        }
+    }
+}
 </style>
