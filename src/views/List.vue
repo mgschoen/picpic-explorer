@@ -47,6 +47,8 @@
 </template>
 
 <script>
+let apiRoot = `${API_ROOT}`
+
 export default {
     name: 'list',
     data () {
@@ -123,15 +125,15 @@ export default {
         },
         getAllArticles: function (page, onlyGettyLead) {
             let url = onlyGettyLead
-                ? 'http://localhost:27112/articles/gettylead/'
-                : 'http://localhost:27112/articles/'
+                ? apiRoot + '/articles/gettylead/'
+                : apiRoot + '/articles/'
             url += page
             this.$http.get(url).then(response => {
                 this.updateList(response)
             }).catch(error => {})
         },
         searchForArticles: function (searchTerm, page) {
-            this.$http.get('http://localhost:27112/search/' + encodeURI(searchTerm) + '/' + page).then(response => {
+            this.$http.get(apiRoot + '/search/' + encodeURI(searchTerm) + '/' + page).then(response => {
                 this.updateList(response)
             }).catch(error => {})
         },

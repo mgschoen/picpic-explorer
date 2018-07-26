@@ -93,7 +93,8 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
-      }
+      },
+      'API_ROOT': '\'http://picpic-api.argonn.me\''
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
@@ -103,6 +104,12 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
+    })
+  ])
+} else {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'API_ROOT': '\'http://localhost:27112\''
     })
   ])
 }

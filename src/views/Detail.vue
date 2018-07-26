@@ -60,6 +60,8 @@
 <script>
 import Mark from 'mark.js'
 
+let apiRoot = `${API_ROOT}`
+
 export default {
     name: 'detail',
     props: ['id'],
@@ -88,7 +90,7 @@ export default {
         }
     },
     mounted () {
-        this.$http.get('http://localhost:27112/article/' + this.id).then(response => {
+        this.$http.get(apiRoot + '/article/' + this.id).then(response => {
             let doc = response.body
             this.url = 'http://www.bbc.com' + doc.url
             this.headline = doc.article.headline
