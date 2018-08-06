@@ -35,11 +35,15 @@
         <b-col cols="auto">
             <b-button-group>
                 <b-button variant="outline-secondary" 
+                    :disabled="!previous" @click="firstPage()"><< First</b-button>
+                <b-button variant="outline-secondary" 
                     :disabled="!previous" @click="previousPage()">< Previous</b-button>
                 <b-button variant="outline-secondary" 
                     disabled>Page {{page + 1}} / {{pagesTotal}}</b-button>
                 <b-button variant="outline-secondary" 
                     :disabled="!next" @click="nextPage()">Next ></b-button>
+                <b-button variant="outline-secondary" 
+                    :disabled="!next" @click="lastPage()">Last >></b-button>
             </b-button-group>
         </b-col>
     </b-row>
@@ -137,19 +141,24 @@ export default {
                 this.updateList(response)
             }).catch(error => {})
         },
-        nextPage: function () {
+        goToPage: function (page) {
             if (this.searchTerm === '') {
-                this.getAllArticles(this.page + 1, this.onlyGettyMeta)
+                this.getAllArticles(page, this.onlyGettyMeta)
             } else {
-                this.searchForArticles(this.searchTerm, this.page + 1)
+                this.searchForArticles(this.searchTerm, page)
             }
         },
+        nextPage: function () {
+            this.goToPage(this.page + 1)
+        },
         previousPage: function () {
-            if (this.searchTerm === '') {
-                this.getAllArticles(this.page - 1, this.onlyGettyMeta)
-            } else {
-                this.searchForArticles(this.searchTerm, this.page - 1)
-            }
+            this.goToPage(this.page - 1)
+        },
+        lastPage: function () {
+            this.goToPage(this.pagesTotal - 1)
+        },
+        firstPage: function () {
+            this.goToPage(0)
         }
     }
 }
