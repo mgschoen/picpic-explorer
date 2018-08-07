@@ -54,11 +54,30 @@
                 </b-card>
             </b-col>
         </b-row>
+
+        <!-- Additional stats if lead image exist -->
+        <b-row v-if="leadImage" class="matchings-row">
+            <b-col>
+                <term-list :terms="matchedTerms"></term-list>
+            </b-col>
+        </b-row>
+
+        <b-row v-if="leadImage" class="matchings-row">
+            <b-col lg="4">
+                <term-stats 
+                    :stats="termStatistics"
+                    :loaded="matchingDataLoaded">
+                </term-stats>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
 <script>
 import Mark from 'mark.js'
+
+import TermList from '../components/TermList.vue'
+import TermStats from '../components/TermStats.vue'
 
 let apiRoot = `${API_ROOT}`
 
@@ -86,7 +105,12 @@ export default {
             leadImageKeywords: [],
 
             // marker
-            marker: null
+            marker: null,
+
+            // matching data
+            matchedTerms: [],
+            termStatistics: {},
+            matchingDataLoaded: false
         }
     },
     mounted () {
@@ -116,9 +140,21 @@ export default {
                         separateWordSearch: false
                     })
                 })
+                // trigger additional requests for term matching
+                this.loadMatching()
             }
         }).catch(error => {})
-    }
+    },
+    methods: {
+        loadMatching: function () {
+            this.$http.get(apiRoot + '/article/' + this.id + '/match').then(response => {
+                this.matchedTerms = response.body.matchedTerms
+                this.termStatistics = response.body.stats
+                this.matchingDataLoaded = true
+            }).catch(error => {})
+        }
+    },
+    components: { TermList, TermStats }
 }
 </script>
 
@@ -165,5 +201,8 @@ span.keyword code {
             content: '- ';
         }
     }
+}
+.matchings-row {
+    margin-top: 20px;
 }
 </style>
