@@ -69,6 +69,9 @@
                     :loaded="matchingDataLoaded">
                 </term-stats>
             </b-col>
+            <b-col lg="8">
+                <term-plot :article-id="id"></term-plot>
+            </b-col>
         </b-row>
     </div>
 </template>
@@ -78,6 +81,7 @@ import Mark from 'mark.js'
 
 import TermList from '../components/TermList.vue'
 import TermStats from '../components/TermStats.vue'
+import TermPlot from '../components/TermPlot.vue'
 
 let apiRoot = `${API_ROOT}`
 
@@ -154,7 +158,7 @@ export default {
             }).catch(error => {})
         }
     },
-    components: { TermList, TermStats }
+    components: { TermList, TermStats, TermPlot }
 }
 </script>
 

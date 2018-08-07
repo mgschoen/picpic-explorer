@@ -24,7 +24,7 @@
                 </b-progress>
             </template>
             <template slot="containingElements" slot-scope="data">
-                <b-badge v-for="elem in data.value" :key="elem" variant="light" class="term">
+                <b-badge v-for="elem in data.value" variant="light" class="term">
                     {{elem}}
                 </b-badge>
             </template>
