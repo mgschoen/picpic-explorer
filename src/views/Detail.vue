@@ -22,32 +22,13 @@
             </b-col>
             <b-col lg="4" order="0" order-lg="1">
                 <b-card :title="`Article $${id}`" id="articleDetails">
-                    <p>
-                        <b-button size="sm" :href="url" target="_blank">
-                            Original article
-                        </b-button>
-                    </p>
-
                     <div class="meta-block">
-                        <h5>Teaser</h5>
-                        <p><b>Headline:</b> {{teaserHeadline}}</p>
-                    </div>
-
-                    <div v-if="leadImage">
-                        <div class="meta-block">
-                            <h5>Lead Image</h5>
-                            <p><b>Title:</b> {{leadImageTitle}}</p>
-                            <a :href="leadImageUrl" target="_blank">
-                                <img :src="leadImageUrl" class="image-lead">
-                            </a>
-                            <p><b>Caption:</b> {{leadImageCaption}}</p>
-                            <p>
-                                <b>Keywords:</b>
-                                <span class="keyword" v-for="kw in leadImageKeywords">
-                                    <code>{{kw.text}}</code>&#32;
-                                </span>
-                            </p>
-                        </div>
+                        <p>
+                            <b-button size="sm" :href="url" target="_blank">
+                                Original article
+                            </b-button>
+                        </p>
+                        <p><b>Teaser headline:</b> {{teaserHeadline}}</p>
                     </div>
 
                     <div class="meta-block">
@@ -56,6 +37,22 @@
                             <a v-for="img in images" :href="img.src" target="_blank" class="image-thumb">
                                 <img :src="img.src">
                             </a>
+                        </p>
+                    </div>
+                </b-card>
+
+                <b-card title="Original lead image" v-if="leadImage">
+                    <div class="meta-block">
+                        <p><b>Title:</b> {{leadImageTitle}}</p>
+                        <a :href="leadImageUrl" target="_blank">
+                            <img :src="leadImageUrl" class="image-lead">
+                        </a>
+                        <p><b>Caption:</b> {{leadImageCaption}}</p>
+                        <p>
+                            <b>Keywords:</b>
+                            <span class="keyword" v-for="kw in leadImageKeywords">
+                                <code>{{kw.text}}</code>&#32;
+                            </span>
                         </p>
                     </div>
                 </b-card>
@@ -193,8 +190,11 @@ export default {
     margin-bottom: 30px;
 }
 .meta-block {
-    border-top: 1px solid rgba(0, 0, 0, .125);
-    padding-top: 10px;
+
+    &:not(:first-of-type) {
+        border-top: 1px solid rgba(0, 0, 0, .125);
+        padding-top: 10px;
+    }
 
     & .image- {
 
