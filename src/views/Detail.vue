@@ -1,8 +1,19 @@
 <template>
     <div>
         <b-row>
-            <b-col lg="8" order="1" order-lg="0" id="articleContent">
+            <b-col cols="12">
                 <h1>{{headline}}</h1>
+                <p class="articleMeta">
+                    <b-badge variant="light">{{published}}</b-badge>
+                    <span class="separator">|</span>
+                    <b-badge variant="light">
+                        <a :href="'http://www.bbc.com/news/' + section" target="_blank">{{section}}</a>
+                    </b-badge>
+                </p>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col lg="8" order="1" order-lg="0" id="articleContent">
                 <div id="paragraphs">
                     <p v-for="p in paragraphs" :class="'para ' + p.type">
                         {{p.content}}
@@ -10,15 +21,11 @@
                 </div>
             </b-col>
             <b-col lg="4" order="0" order-lg="1">
-                <b-card :title="`Article $${id}`" id="articleMeta">
+                <b-card :title="`Article $${id}`" id="articleDetails">
                     <p>
                         <b-button size="sm" :href="url" target="_blank">
                             Original article
                         </b-button>
-                    </p>
-                    <p>
-                        <b>Published:</b> {{published}}<br />
-                        <b>Section:</b> {{section}}
                     </p>
 
                     <div class="meta-block">
@@ -163,7 +170,26 @@ export default {
 </script>
 
 <style lang="scss">
-#articleMeta {
+.articleMeta {
+    border-top: 1px solid rgba(0, 0, 0, .125);
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    margin: 20px auto;
+    padding-bottom: 5px;
+
+    a {
+        color: inherit;
+    }
+
+    span.separator {
+        color: rgba(0, 0, 0, .125);
+    }
+
+    .badge {
+        font-weight: 200;
+        letter-spacing: .05em;
+    }
+}
+#articleDetails {
     margin-bottom: 30px;
 }
 .meta-block {
