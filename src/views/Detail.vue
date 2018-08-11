@@ -6,9 +6,7 @@
                 <p class="articleMeta">
                     <b-badge variant="light">{{published}}</b-badge>
                     <span class="separator">|</span>
-                    <b-badge variant="light">
-                        <a :href="'http://www.bbc.com/news/' + section" target="_blank">{{section}}</a>
-                    </b-badge>
+                    <b-badge variant="light">{{section}}</b-badge>
                 </p>
             </b-col>
         </b-row>
@@ -21,6 +19,7 @@
                 </div>
             </b-col>
             <b-col lg="4" order="0" order-lg="1">
+                <!-- Article details -->
                 <b-card :title="`Article $${id}`" id="articleDetails">
                     <div class="meta-block">
                         <p>
@@ -41,6 +40,10 @@
                     </div>
                 </b-card>
 
+                <!-- Image selector statistics-based -->
+                <image-selector-stat :id="id"></image-selector-stat>
+
+                <!-- Original lead image -->
                 <b-card title="Original lead image" v-if="leadImage">
                     <div class="meta-block">
                         <p><b>Title:</b> {{leadImageTitle}}</p>
@@ -86,6 +89,7 @@ import Mark from 'mark.js'
 import TermList from '../components/TermList.vue'
 import TermStats from '../components/TermStats.vue'
 import TermPlot from '../components/TermPlot.vue'
+import ImageSelectorStat from '../components/ImageSelectorStat.vue'
 
 let apiRoot = `${API_ROOT}`
 
@@ -162,7 +166,7 @@ export default {
             }).catch(error => {})
         }
     },
-    components: { TermList, TermStats, TermPlot }
+    components: { TermList, TermStats, TermPlot, ImageSelectorStat }
 }
 </script>
 
@@ -186,7 +190,7 @@ export default {
         letter-spacing: .05em;
     }
 }
-#articleDetails {
+.card {
     margin-bottom: 30px;
 }
 .meta-block {
