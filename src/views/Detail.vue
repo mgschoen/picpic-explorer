@@ -10,6 +10,13 @@
                 </p>
             </b-col>
         </b-row>
+
+        <b-row>
+            <b-col lg="4">
+
+            </b-col>
+        </b-row>
+
         <b-row>
             <b-col lg="8" order="1" order-lg="0" id="articleContent">
                 <div id="paragraphs">
@@ -51,12 +58,17 @@
                             <img :src="leadImageUrl" class="image-lead">
                         </a>
                         <p><b>Caption:</b> {{leadImageCaption}}</p>
-                        <p>
-                            <b>Keywords:</b>
-                            <span class="keyword" v-for="kw in leadImageKeywords">
-                                <code>{{kw.text}}</code>&#32;
-                            </span>
-                        </p>
+                        <b-collapse id="collapseKeywords">
+                            <p>
+                                <b>Keywords:</b>
+                                <span class="keyword" v-for="kw in leadImageKeywords">
+                                    <code>{{kw.text}}</code>&#32;
+                                </span>
+                            </p>
+                        </b-collapse>
+                        <a role="button" tabindex="0" 
+                            v-b-toggle.collapseKeywords 
+                            id="collapseKeywordsToggle"></a>
                     </div>
                 </b-card>
             </b-col>
@@ -238,5 +250,20 @@ span.keyword code {
 }
 .matchings-row {
     margin-top: 20px;
+}
+
+#collapseKeywordsToggle {
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &.collapsed:after {
+        content: '+ Show keywords';
+    }
+
+    &:not(.collapsed):after {
+        content: '- Hide keywords'
+    }
 }
 </style>

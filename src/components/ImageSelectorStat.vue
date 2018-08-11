@@ -24,9 +24,18 @@
         </div>
 
         <div class="result">
-            <p v-if="status === 'loading'">Loading...</p>
-            <p v-if="status === 'error'">Ooops. An error occurred.</p>
-            <p v-if="status === 'no-image'">This query did not return any results. Try different parameters.</p>
+            <!-- Loading -->
+            <b-progress v-if="status === 'loading'" :max="1" height="20px" animated>
+                <b-progress-bar :value="1" label="Loading..."></b-progress-bar>
+            </b-progress>
+            <!-- Error -->
+            <b-alert variant="danger" :show="status === 'error'">
+                Ooops. An error occurred.
+            </b-alert>
+            <!-- No image -->
+            <b-alert variant="info" :show="status === 'no-image'">
+                This query did not return any results. Try different parameters.
+            </b-alert>
 
             <a :href="detailUrl" target="_blank" v-if="status === 'ready'">
                 <img :src="previewUrl">
@@ -35,10 +44,15 @@
             <div v-if="status === 'ready' || status === 'no-image'" class="resultDetails">
                 <p><b>Query:</b> {{query}}</p>
                 <p>
-                    <b>Terms:</b>
-                    <span v-for="term in searchTerms">
-                        <code>{{term}}</code>&#32;
-                    </span>
+                    <b-collapse id="collapseSearchTerms">
+                        <b>Terms:</b>
+                        <span v-for="term in searchTerms">
+                            <code>{{term}}</code>&#32;
+                        </span>
+                    </b-collapse>
+                    <a role="button" tabindex="0" 
+                        v-b-toggle.collapseSearchTerms 
+                        id="collapseSearchTermsToggle"></a>
                 </p>
             </div>
         </div>
@@ -119,6 +133,20 @@ export default {
 
     &Details p {
         margin: 0 auto 5px;
+    }
+    #collapseSearchTermsToggle {
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &.collapsed:after {
+            content: '+ Show terms';
+        }
+
+        &:not(.collapsed):after {
+            content: '- Hide terms'
+        }
     }
 }
 </style>
