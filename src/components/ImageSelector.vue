@@ -1,26 +1,32 @@
 <template>
-    <b-card title="Autoselect image (stat)">
+    <b-card :header="title">
         <div class="controls">
-            <label for="threshold">Threshold: {{threshold}}</label>
-            <b-form-input 
-                id="threshold"
-                type="range" 
-                min="0" 
-                max="1" 
-                step="0.1" 
-                v-model="threshold"
-                v-on:change="thresholdChanged"
-                size="sm"
-                :disabled="status === 'loading'"></b-form-input>
-            
-            <label for="sortOrder">Sort order:</label>
-            <b-form-select 
-                id="sortOrder"
-                v-model="sortOrder" 
-                :options="sortOrderOptions"
-                size="sm"
-                v-on:change="sortOrderChanged"
-                :disabled="status === 'loading'"></b-form-select>
+
+            <b-row>
+                <b-col md="6">
+                    <label for="threshold">Threshold: {{threshold}}</label>
+                    <b-form-input 
+                        id="threshold"
+                        type="range" 
+                        min="0" 
+                        max="1" 
+                        step="0.05" 
+                        v-model="threshold"
+                        v-on:change="thresholdChanged"
+                        size="sm"
+                        :disabled="status === 'loading'"></b-form-input>
+                </b-col>
+                <b-col md="6">
+                    <label for="sortOrder">Sort order:</label>
+                    <b-form-select 
+                        id="sortOrder"
+                        v-model="sortOrder" 
+                        :options="sortOrderOptions"
+                        size="sm"
+                        v-on:change="sortOrderChanged"
+                        :disabled="status === 'loading'"></b-form-select>
+                        </b-col>
+            </b-row>
         </div>
 
         <div class="result">
@@ -37,21 +43,24 @@
                 This query did not return any results. Try different parameters.
             </b-alert>
 
-            <a :href="detailUrl" target="_blank" v-if="status === 'ready'">
-                <img :src="previewUrl">
+            <a :href="detailUrl" 
+                target="_blank" 
+                v-if="status === 'ready'" class="imageLink"
+                :style="'background-image: url(' + previewUrl + ');'">
+                <!--img :src="previewUrl"-->
             </a>
 
             <div v-if="status === 'ready' || status === 'no-image'" class="resultDetails">
                 <p><b>Query:</b> {{query}}</p>
                 <p>
-                    <b-collapse id="collapseSearchTerms">
+                    <b-collapse :id="'collapseSearchTerms-'+_uid">
                         <b>Terms:</b>
                         <span v-for="term in searchTerms">
                             <code>{{term}}</code>&#32;
                         </span>
                     </b-collapse>
                     <a role="button" tabindex="0" 
-                        v-b-toggle.collapseSearchTerms 
+                        v-b-toggle="'collapseSearchTerms-'+_uid" 
                         id="collapseSearchTermsToggle"></a>
                 </p>
             </div>
@@ -63,8 +72,8 @@
 let apiRoot = `${API_ROOT}`
 
 export default {
-    name: 'image-selector-stat',
-    props: [ 'id' ],
+    name: 'image-selector',
+    props: [ 'title', 'mode', 'id', 'defaultThreshold' ],
     data() {
         return {
             query: '',
@@ -83,7 +92,13 @@ export default {
             status: 'loading'
         }
     },
+    computed: {
+        requestBaseURL: function () {
+            return `${apiRoot}/article/${this.id}/picpic/${this.mode}`
+        }
+    },
     mounted() {
+        this.threshold = this.defaultThreshold
         this.pickPic(this.threshold, this.sortOrder)
     },
     methods: {
@@ -96,7 +111,7 @@ export default {
         pickPic: function (threshold, sortOrder) {
             this.status = 'loading'
             this.resetResults()
-            let url = `${apiRoot}/article/${this.id}/picpic/stat/${threshold}/${sortOrder}`
+            let url = `${this.requestBaseURL}/${threshold}/${sortOrder}`
             this.$http.get(url).then(response => {
                 this.query = response.body.queryString
                 this.searchTerms = response.body.queryTerms.map(term => term.stemmedTerm)
@@ -123,11 +138,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.card-header {
+    font-weight: 600;
+    text-align: center;
+}
+.card-body {
+    font-size: 0.85rem;
+}
 .result {
     margin-top: 20px;
 
-    img {
+    .imageLink {
+        background-size: cover;
+        background-position: center;
+        display: block;
         margin-bottom: 10px;
+        height: 200px;
         width: 100%;
     }
 

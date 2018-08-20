@@ -12,8 +12,48 @@
         </b-row>
 
         <b-row>
-            <b-col lg="4">
+            <b-col lg="4" sm="6">
+                <!-- Image selector statistics-based -->
+                <image-selector 
+                    mode="stat"
+                    :id="id"
+                    title="Autoselect image (stat)"
+                    default-threshold="0.5">
+                </image-selector>
+            </b-col>
 
+            <b-col lg="4" sm="6">
+                <!-- Image selector machine learning based -->
+                <image-selector 
+                    mode="ml"
+                    :id="id"
+                    title="Autoselect image (ML)"
+                    default-threshold="0.1">
+                </image-selector>
+            </b-col>
+
+            <b-col lg="4" sm="6" v-if="leadImage">
+                <!-- Original lead image -->
+                <b-card header="Original lead image" v-if="leadImage">
+                    <div class="meta-block">
+                        <p><b>Title:</b> {{leadImageTitle}}</p>
+                        <a :href="leadImageUrl" target="_blank">
+                            <img :src="leadImageUrl" class="image-lead">
+                        </a>
+                        <b-collapse id="collapseKeywords">
+                            <p><b>Caption:</b> {{leadImageCaption}}</p>
+                            <p>
+                                <b>Keywords:</b>
+                                <span class="keyword" v-for="kw in leadImageKeywords">
+                                    <code>{{kw.text}}</code>&#32;
+                                </span>
+                            </p>
+                        </b-collapse>
+                        <a role="button" tabindex="0" 
+                            v-b-toggle.collapseKeywords 
+                            id="collapseKeywordsToggle"></a>
+                    </div>
+                </b-card>
             </b-col>
         </b-row>
 
@@ -46,31 +86,6 @@
                         </p>
                     </div>
                 </b-card>
-
-                <!-- Image selector statistics-based -->
-                <image-selector-stat :id="id"></image-selector-stat>
-
-                <!-- Original lead image -->
-                <b-card title="Original lead image" v-if="leadImage">
-                    <div class="meta-block">
-                        <p><b>Title:</b> {{leadImageTitle}}</p>
-                        <a :href="leadImageUrl" target="_blank">
-                            <img :src="leadImageUrl" class="image-lead">
-                        </a>
-                        <p><b>Caption:</b> {{leadImageCaption}}</p>
-                        <b-collapse id="collapseKeywords">
-                            <p>
-                                <b>Keywords:</b>
-                                <span class="keyword" v-for="kw in leadImageKeywords">
-                                    <code>{{kw.text}}</code>&#32;
-                                </span>
-                            </p>
-                        </b-collapse>
-                        <a role="button" tabindex="0" 
-                            v-b-toggle.collapseKeywords 
-                            id="collapseKeywordsToggle"></a>
-                    </div>
-                </b-card>
             </b-col>
         </b-row>
 
@@ -101,7 +116,7 @@ import Mark from 'mark.js'
 import TermList from '../components/TermList.vue'
 import TermStats from '../components/TermStats.vue'
 import TermPlot from '../components/TermPlot.vue'
-import ImageSelectorStat from '../components/ImageSelectorStat.vue'
+import ImageSelector from '../components/ImageSelector.vue'
 
 let apiRoot = `${API_ROOT}`
 
@@ -178,7 +193,7 @@ export default {
             }).catch(error => {})
         }
     },
-    components: { TermList, TermStats, TermPlot, ImageSelectorStat }
+    components: { TermList, TermStats, TermPlot, ImageSelector }
 }
 </script>
 
@@ -203,7 +218,13 @@ export default {
     }
 }
 .card {
+    font-size: .85rem;
     margin-bottom: 30px;
+
+    &-header {
+        font-weight: 600;
+        text-align: center;
+    }
 }
 .meta-block {
 
@@ -259,11 +280,11 @@ span.keyword code {
     }
 
     &.collapsed:after {
-        content: '+ Show keywords';
+        content: '+ Show details';
     }
 
     &:not(.collapsed):after {
-        content: '- Hide keywords'
+        content: '- Hide details'
     }
 }
 </style>
