@@ -1,6 +1,9 @@
 var path = require('path')
 var webpack = require('webpack')
 
+const PACKAGE_JSON = require('./package.json')
+const VERSION = `v${PACKAGE_JSON.version}`
+
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -94,7 +97,8 @@ if (process.env.NODE_ENV === 'production') {
       'process.env': {
         NODE_ENV: '"production"'
       },
-      'API_ROOT': '\'http://picpic-api.argonn.me\''
+      'API_ROOT': '\'http://picpic-api.argonn.me\'',
+      'VERSION': JSON.stringify(VERSION)
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
@@ -109,7 +113,8 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
-      'API_ROOT': '\'http://localhost:27112\''
+      'API_ROOT': '\'http://localhost:27112\'',
+      'VERSION': JSON.stringify(VERSION)
     })
   ])
 }

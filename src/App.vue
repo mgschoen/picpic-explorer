@@ -38,8 +38,8 @@
             image="ios-disc.svg"></stat>
         </b-col>
         <b-col sm="4" md="2">
-          <stat title="Storage modified"
-            :value="storageModified"
+          <stat title="Explorer version"
+            :value="packageVersion"
             image="ios-build.svg"></stat>
         </b-col>
       </b-row>
@@ -57,12 +57,14 @@ import prettyBytes from 'pretty-bytes'
 import stat from './components/Stat.vue'
 
 let apiRoot = `${API_ROOT}`
+let version = `${VERSION}`
 
 export default {
   name: 'app',
   data () {
     return {
-      stats: {}
+      stats: {},
+      packageVersion: version
     }
   },
   computed: {

@@ -67,14 +67,17 @@
             </b-col>
             <b-col lg="4" order="0" order-lg="1">
                 <!-- Article details -->
-                <b-card :title="`Article $${id}`" id="articleDetails">
+                <b-card title="Article details" id="articleDetails">
                     <div class="meta-block">
                         <p>
                             <b-button size="sm" :href="url" target="_blank">
                                 Original article
                             </b-button>
                         </p>
-                        <p><b>Teaser headline:</b> {{teaserHeadline}}</p>
+                        <p>
+                            <b>ID:</b> <code>{{id}}</code><br />
+                            <b>Teaser headline:</b> {{teaserHeadline}}
+                        </p>
                     </div>
 
                     <div class="meta-block">
