@@ -121,7 +121,7 @@ export default {
             this.searchResults = apiResponse.body.result.map(doc => {
                 let date = new Date(doc.published)
                 return {
-                    id: doc.$loki,
+                    id: doc.id,
                     headline: doc.article.headline,
                     published: date.toLocaleString('en-GB', {timeZone: 'UTC'})
                 }
