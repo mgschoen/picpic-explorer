@@ -1,7 +1,7 @@
 <template>
     <b-card title="Matched terms">
         <b-table small striped responsive :fields="fields" :items="terms">
-            <template slot="stemmedText" slot-scope="data">
+            <template slot="stemmedTerm" slot-scope="data">
                 <code>{{data.value}}</code>
             </template>
             <template slot="originalTerms" slot-scope="data">
@@ -56,7 +56,7 @@ export default {
     data() {
         return {
             fields: [
-                { key: 'stemmedText', label: 'term (stemmed)' },
+                { key: 'stemmedTerm', label: 'term (stemmed)' },
                 { key: 'originalTerms', label: 'terms (article)' },
                 { key: 'originalTermsKW', label: 'terms (keyword)' },
                 { key: 'termFrequency', label: 'term frequency', sortable: true },
