@@ -46,7 +46,6 @@
                 target="_blank" 
                 v-if="status === 'ready'" class="imageLink"
                 :style="'background-image: url(' + previewUrl + ');'">
-                <!--img :src="previewUrl"-->
             </a>
 
             <div v-if="status === 'ready' || status === 'no-image'" class="resultDetails">
@@ -55,7 +54,9 @@
                     <b-collapse :id="'collapseSearchTerms-'+_uid">
                         <b>Terms:</b>
                         <span v-for="term in searchTerms">
-                            <code>{{term}}</code>&#32;
+                            <code v-b-tooltip.hover 
+                                :title="Math.round(term.p * 1000) / 1000">
+                                {{term.originalTerms[0]}}</code>&#32;
                         </span>
                     </b-collapse>
                     <a role="button" tabindex="0" 
@@ -131,7 +132,7 @@ export default {
                 let url = `${this.requestBaseURL}/${threshold}/${sortOrder}`
                 this.$http.get(url).then(response => {
                     this.query = response.body.queryString
-                    this.searchTerms = response.body.queryTerms.map(term => term.stemmedTerm)
+                    this.searchTerms = response.body.queryTerms
                     let image = response.body.image
                     if (image) {
                         this.previewUrl = image.previewUrl
@@ -185,6 +186,13 @@ export default {
         margin-bottom: 10px;
         height: 200px;
         width: 100%;
+    }
+
+    code {
+        border: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 2px;
+        padding: 0 3px;
+        white-space: nowrap;
     }
 
     &Details p {
