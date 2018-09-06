@@ -1,7 +1,6 @@
 <template>
-    <b-card :header="title">
+    <b-card :header="title" footer-tag="footer">
         <div class="controls">
-
             <b-row>
                 <b-col md="6">
                     <label for="threshold">Threshold: {{threshold}}</label>
@@ -14,7 +13,7 @@
                         v-model="threshold"
                         v-on:change="thresholdChanged"
                         size="sm"
-                        :disabled="status === 'loading'"></b-form-input>
+                        :disabled="status === 'loading' || entitiesOnly"></b-form-input>
                 </b-col>
                 <b-col md="6">
                     <label for="sortOrder">Sort order:</label>
@@ -65,10 +64,21 @@
                 </p>
             </div>
         </div>
+
+        <div slot="footer" v-if="mode === 'ml'">
+            <label for="entitiesOnly">Use entity terms only:</label>
+            <switches id="entitiesOnly" 
+                v-model="entitiesOnly"
+                v-on:input="entitiesOnlyChanged">
+                sdf
+            </switches>
+        </div>
     </b-card>
 </template>
 
 <script>
+import Switches from 'vue-switches'
+
 let apiRoot = `${API_ROOT}`
 
 export default {
@@ -88,17 +98,23 @@ export default {
                 { value: 'best_match', text: 'best match' },
                 { value: 'newest', text: 'newest' }
             ],
+            entitiesOnly: false,
 
-            status: 'loading'
+            status: 'not-mounted'
         }
     },
     computed: {
         requestBaseURL: function () {
-            return `${apiRoot}/article/${this.id}/picpic/${this.mode}`
+            let modeString = this.mode + (this.entitiesOnly ? '-entities' : '') 
+            return `${apiRoot}/article/${this.id}/picpic/${modeString}`
         }
     },
     mounted() {
+        this.status = 'mounted'
         this.threshold = this.defaultThreshold
+        if (this.mode === 'ml') {
+            this.entitiesOnly = true
+        }
         this.pickPic(this.threshold, this.sortOrder)
     },
     methods: {
@@ -109,30 +125,44 @@ export default {
             this.detailUrl = ''
         },
         pickPic: function (threshold, sortOrder) {
-            this.status = 'loading'
-            this.resetResults()
-            let url = `${this.requestBaseURL}/${threshold}/${sortOrder}`
-            this.$http.get(url).then(response => {
-                this.query = response.body.queryString
-                this.searchTerms = response.body.queryTerms.map(term => term.stemmedTerm)
-                let image = response.body.image
-                if (image) {
-                    this.previewUrl = image.previewUrl
-                    this.detailUrl = image.detailUrl
-                    this.status = 'ready'
-                } else {
-                    this.status = 'no-image'
-                }
-            }).catch(error => {
-                this.status = 'error'
-            })
+            if (this.status !== 'loading') {
+                this.status = 'loading'
+                this.resetResults()
+                let url = `${this.requestBaseURL}/${threshold}/${sortOrder}`
+                this.$http.get(url).then(response => {
+                    this.query = response.body.queryString
+                    this.searchTerms = response.body.queryTerms.map(term => term.stemmedTerm)
+                    let image = response.body.image
+                    if (image) {
+                        this.previewUrl = image.previewUrl
+                        this.detailUrl = image.detailUrl
+                        this.status = 'ready'
+                    } else {
+                        this.status = 'no-image'
+                    }
+                }).catch(error => {
+                    this.status = 'error'
+                })
+            }
         },
         thresholdChanged: function (newThreshold) {
-            this.pickPic(newThreshold, this.sortOrder)
+            if (this.status !== 'not-mounted') {
+                this.pickPic(newThreshold, this.sortOrder)
+            }
         },
         sortOrderChanged: function (newSortOrder) {
-            this.pickPic(this.threshold, newSortOrder)
+            if (this.status !== 'not-mounted') {
+                this.pickPic(this.threshold, newSortOrder)
+            }
+        },
+        entitiesOnlyChanged: function () {
+            if (this.status !== 'not-mounted') {
+                this.pickPic(this.threshold, this.sortOrder)
+            }
         }
+    },
+    components: {
+        Switches
     }
 }
 </script>
@@ -174,5 +204,9 @@ export default {
             content: '- Hide terms'
         }
     }
+}
+#entitiesOnly {
+    left: 5px;
+    top: 3px;
 }
 </style>
