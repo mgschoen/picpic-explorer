@@ -93,13 +93,27 @@
         </b-row>
 
         <!-- Additional stats if lead image exist -->
-        <b-row v-if="leadImage" class="matchings-row">
-            <b-col>
+        <b-row v-if="leadImage && !showStats" class="matchings-row">
+            <b-col style="text-align: center;">
+                <b-button @click="loadStats" v-if="!statsLoading">
+                    <span v-if="statsLoading !== true">Show statistics</span>
+                </b-button>
+                <b-progress v-if="statsLoading" 
+                    :max="1" 
+                    height="20px" 
+                    variant="secondary"
+                    animated>
+                        <b-progress-bar :value="1" label="Loading stats..."></b-progress-bar>
+                </b-progress>
+            </b-col>
+        </b-row>
+        <b-row v-if="showStats" class="matchings-row">
+            <b-col> 
                 <term-list :terms="matchedTerms"></term-list>
             </b-col>
         </b-row>
 
-        <b-row v-if="leadImage" class="matchings-row">
+        <b-row v-if="showStats" class="matchings-row">
             <b-col lg="4">
                 <term-stats 
                     :stats="termStatistics"
@@ -152,7 +166,11 @@ export default {
             // matching data
             matchedTerms: [],
             termStatistics: {},
-            matchingDataLoaded: false
+            matchingDataLoaded: false,
+
+            // view params
+            statsLoading: false,
+            showStats: false
         }
     },
     mounted () {
@@ -182,18 +200,28 @@ export default {
                         separateWordSearch: false
                     })
                 })
-                // trigger additional requests for term matching
-                this.loadMatching()
             }
         }).catch(error => {})
     },
     methods: {
         loadMatching: function () {
-            this.$http.get(apiRoot + '/article/' + this.id + '/match').then(response => {
-                this.matchedTerms = response.body.matchedTerms
-                this.termStatistics = response.body.stats
-                this.matchingDataLoaded = true
-            }).catch(error => {})
+            return new Promise((resolve, reject) => {
+                this.$http.get(apiRoot + '/article/' + this.id + '/match').then(response => {
+                    this.matchedTerms = response.body.matchedTerms
+                    this.termStatistics = response.body.stats
+                    this.matchingDataLoaded = true
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+        loadStats: function () {
+            this.statsLoading = true
+            this.loadMatching().then(() => {
+                this.showStats = true
+                this.statsLoading = false
+            })
         }
     },
     components: { TermList, TermStats, TermPlot, ImageSelector }
