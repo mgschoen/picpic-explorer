@@ -113,9 +113,6 @@ export default {
     mounted() {
         this.status = 'mounted'
         this.threshold = this.defaultThreshold
-        if (this.mode === 'ml') {
-            this.entitiesOnly = true
-        }
         this.pickPic(this.threshold, this.sortOrder)
     },
     methods: {
