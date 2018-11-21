@@ -126,11 +126,11 @@ export default {
             if (this.status !== 'loading') {
                 this.status = 'loading'
                 this.resetResults()
-                let url = `${this.requestBaseURL}/${threshold}/${sortOrder}`
+                let url = `${this.requestBaseURL}?threshold=${threshold}&sortOrder=${sortOrder}`
                 this.$http.get(url).then(response => {
                     this.query = response.body.queryString
                     this.searchTerms = response.body.queryTerms
-                    let image = response.body.image
+                    let image = response.body.images[0]
                     if (image) {
                         this.previewUrl = image.previewUrl
                         this.detailUrl = image.detailUrl
