@@ -1,14 +1,49 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
 
-const PACKAGE_JSON = require('./package.json')
-const VERSION = `v${PACKAGE_JSON.version}`
+const PACKAGE_JSON = require('./package.json');
+const VERSION = `v${PACKAGE_JSON.version}`;
+const { NODE_ENV, PICPIC_EXPLORER_MODE } = process.env;
+
+const devtool = NODE_ENV === 'production' ? '#source-map' : '#eval-source-map';
+
+let API_ROOT = '';
+if (PICPIC_EXPLORER_MODE === 'demo') {
+  API_ROOT = '\'/static/api\'';
+} else if (NODE_ENV === 'production') {
+  API_ROOT = '\'http://picpic-api.argonn.me\'';
+} else {
+  API_ROOT = '\'http://localhost:27112\'';
+}
+
+const definePlugin = new webpack.DefinePlugin({
+  'process.env': {
+    NODE_ENV: `"${NODE_ENV}"`,
+  },
+  VERSION: JSON.stringify(VERSION),
+  API_ROOT,
+});
+
+let plugins = [definePlugin];
+if (NODE_ENV === 'production') {
+  plugins = plugins.concat([
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false
+      },
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
+  ]);
+}
 
 module.exports = {
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
+    publicPath: '/',
     filename: 'build.js'
   },
   module: {
@@ -86,35 +121,6 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
-}
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      },
-      'API_ROOT': '\'http://picpic-api.argonn.me\'',
-      'VERSION': JSON.stringify(VERSION)
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
-} else {
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'API_ROOT': '\'http://localhost:27112\'',
-      'VERSION': JSON.stringify(VERSION)
-    })
-  ])
+  devtool,
+  plugins
 }
