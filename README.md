@@ -1,18 +1,33 @@
-# picpic-explorer
+# PicPic Explorer
 
-> A web based visual explorer for data that is provided by picpic-api
+A little Vue app I used for data analysis in my bachelor's thesis. 
 
-## Build Setup
+PicPic is a piece of software that automatically selects images for news articles. It uses multiple approaches such as pre-trained neural networks and static keyword extraction to create a search query that can be used in image databases.
+
+I trained the neural networks from scratch on a corpus of 20,000 scraped articles from the BBC. While analysing and refining the training and extraction approaches, I used this explorer application to make sense of the huge dataset.
+
+PicPic Explorer originally consumed data from a self-written NodeJS backend that served content from MongoDB and used Bing Image Search for displaying image suggestions. Most of this is not working anymore, but you can get a sense of how it worked in this static demo: https://picpic-explorer-demo.netlify.app/
+
+![](./static/images/picpic-explorer-2.png)
+
+## Usage
+
+Uses NodeJS 10.
 
 ``` bash
 # install dependencies
-npm install
+yarn install
 
 # serve with hot reload at localhost:8080
-npm run dev
+yarn run dev
+yarn run dev-demo # alternative, runs the demo application
 
 # build for production with minification
-npm run build
+yarn run build
+yarn run build-demo # alternative, builds the demo application
 ```
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## More screenshots!
+
+![](./static/images/picpic-explorer-1.png)
+![](./static/images/picpic-explorer-3.png)
