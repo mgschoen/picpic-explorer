@@ -21,6 +21,7 @@ const definePlugin = new webpack.DefinePlugin({
     NODE_ENV: `"${NODE_ENV}"`,
   },
   VERSION: JSON.stringify(VERSION),
+  EXPLORER_MODE: `"${PICPIC_EXPLORER_MODE || 'default'}"`,
   API_ROOT,
 });
 
@@ -43,7 +44,7 @@ module.exports = {
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: '/',
+    publicPath: '/dist/',
     filename: 'build.js'
   },
   module: {

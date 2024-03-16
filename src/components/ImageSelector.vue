@@ -41,6 +41,10 @@
             <b-alert variant="info" :show="status === 'no-image'">
                 This query did not return any results. Try different parameters.
             </b-alert>
+            <!-- Not available -->
+            <b-alert variant="info" :show="status === 'not-available'">
+                Automatic image selection is not available in demo mode – sorry!
+            </b-alert>
 
             <a :href="detailUrl" 
                 target="_blank" 
@@ -81,6 +85,7 @@
 import Switches from 'vue-switches'
 
 let apiRoot = `${API_ROOT}`
+let explorerMode = `${EXPLORER_MODE}`
 
 export default {
     name: 'image-selector',
@@ -111,6 +116,10 @@ export default {
         }
     },
     mounted() {
+        if (explorerMode === 'demo') {
+            this.status = 'not-available';
+            return;
+        }
         this.status = 'mounted'
         this.threshold = this.defaultThreshold
         this.pickPic(this.threshold, this.sortOrder)
@@ -144,19 +153,22 @@ export default {
             }
         },
         thresholdChanged: function (newThreshold) {
-            if (this.status !== 'not-mounted') {
-                this.pickPic(newThreshold, this.sortOrder)
+            if (this.status === 'not-mounted' || this.status === 'not-available') {
+                return;
             }
+            this.pickPic(newThreshold, this.sortOrder)
         },
         sortOrderChanged: function (newSortOrder) {
-            if (this.status !== 'not-mounted') {
-                this.pickPic(this.threshold, newSortOrder)
+            if (this.status === 'not-mounted' || this.status === 'not-available') {
+                return;
             }
+            this.pickPic(this.threshold, newSortOrder)
         },
         entitiesOnlyChanged: function () {
-            if (this.status !== 'not-mounted') {
-                this.pickPic(this.threshold, this.sortOrder)
+            if (this.status === 'not-mounted' || this.status === 'not-available') {
+                return;
             }
+            this.pickPic(this.threshold, this.sortOrder)
         }
     },
     components: {

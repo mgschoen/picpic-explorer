@@ -5,7 +5,7 @@
             <h1>Select an article</h1>
         </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="explorerMode !== 'demo'">
         <b-col>
             <b-form-input v-model="searchTerm" 
                 type="text" 
@@ -52,6 +52,7 @@
 
 <script>
 let apiRoot = `${API_ROOT}`
+let explorerMode = `${EXPLORER_MODE}`
 
 export default {
     name: 'list',
@@ -72,6 +73,7 @@ export default {
                 }
             },
             onlyGettyMeta: false,
+            explorerMode,
 
             // pagination
             previous: false,
