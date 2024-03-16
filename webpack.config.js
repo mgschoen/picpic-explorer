@@ -6,6 +6,7 @@ const VERSION = `v${PACKAGE_JSON.version}`;
 const { NODE_ENV, PICPIC_EXPLORER_MODE } = process.env;
 
 const devtool = NODE_ENV === 'production' ? '#source-map' : '#eval-source-map';
+const publicPath = NODE_ENV === 'production' && PICPIC_EXPLORER_MODE === 'demo' ? '/' : '/dist/';
 
 let API_ROOT = '';
 if (PICPIC_EXPLORER_MODE === 'demo') {
@@ -44,7 +45,7 @@ module.exports = {
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
+    publicPath,
     filename: 'build.js'
   },
   module: {
