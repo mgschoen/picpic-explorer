@@ -10,7 +10,7 @@ const publicPath = NODE_ENV === 'production' && PICPIC_EXPLORER_MODE === 'demo' 
 
 let API_ROOT = '';
 if (PICPIC_EXPLORER_MODE === 'demo') {
-  API_ROOT = '\'/static/api\'';
+  API_ROOT = '\'https://picpic-api-demo.netlify.app\'';
 } else if (NODE_ENV === 'production') {
   API_ROOT = '\'http://picpic-api.argonn.me\'';
 } else {
