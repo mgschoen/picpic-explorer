@@ -2,7 +2,7 @@
 
 A little Vue app I used for data analysis in my bachelor's thesis. 
 
-[PicPic](https://github.com/mgschoen/picpic-core) is a piece of software that automatically selects images for news articles. It uses multiple approaches such as pre-trained neural networks and static keyword extraction to create a search query that can be used in image databases.
+[PicPic](https://github.com/mgschoen?tab=repositories&q=picpic&type=&language=&sort=) is a set of applications that automatically select images for news articles. It uses multiple approaches such as pre-trained neural networks and static keyword extraction to create a search query that can be used in image databases.
 
 I trained the neural networks from scratch on a [corpus of 20,000 scraped articles from the BBC](https://github.com/mgschoen/gettygetter). While analysing and refining the training and extraction approaches, I used this explorer application to make sense of the huge dataset.
 
